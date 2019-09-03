@@ -51,8 +51,6 @@ class KneeDataSet(Dataset):
                     range(hf['kspace'].shape[0])
                 ))
 
-        print('num slices: {}'.format(len(self.slice_list)))
-
     def __len__(self):
         return len(self.slice_list)
 
@@ -86,5 +84,12 @@ class KneeDataSet(Dataset):
         out += '------------------------------------------------------------\n'
         out += 'directory: {}\n'.format(self.directory)
         out += 'total number of slices: {}\n'.format(len(self.slice_list))
+
+        if not self.transform == None:
+            out += '\n'
+            out += 'Transform List:\n'
+
+            for t in self.transform.transforms:
+                out += t.__class__.__name__ + '\n'
 
         return out

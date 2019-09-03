@@ -15,6 +15,7 @@ def main():
         transforms.AddNoise(sigma=1e-10),
         transforms.Ifft(target_op=True, norm='ortho'),
         transforms.SquareRootSumSquare(target_op=True),
+        transforms.Normalize(target_op=True),
         transforms.ToTensor(dat_complex=False, target_complex=False)
     ]
 

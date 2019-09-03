@@ -1,17 +1,19 @@
 class Compose(object):
     """Composes several transforms together.
-        Args:
-            transforms (list of ``Transform`` objects): list of transforms 
-            to compose.
-        Example:
-            >>> transforms.Compose([
-            >>>     transforms.MriNoise(),
-            >>>     transforms.ToTensor(),
-            >>> ])
 
-        Returns:
-            ob (PyTorch transform object): Can be used with PyTorch dataset
-                with transform=ob option.
+    Args:
+        transforms (list of ``Transform`` objects): list of transforms 
+        to compose.
+
+    Example:
+        >>> transforms.Compose([
+        >>>     transforms.AddNoise(),
+        >>>     transforms.ToTensor(),
+        >>> ])
+
+    Returns:
+        ob (PyTorch transform object): Can be used with PyTorch dataset
+            with transform=ob option.
     """
 
     def __init__(self, transforms):

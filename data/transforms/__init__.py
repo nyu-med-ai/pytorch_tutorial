@@ -3,3 +3,4 @@ from .ifft import Ifft
 from .sqrtsumsquare import SquareRootSumSquare
 from .compose import Compose
 from .addnoise import AddNoise
+from .normalize import Normalize

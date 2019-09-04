@@ -23,25 +23,25 @@ class ResidDenoiseCnn(nn.Module):
 
         # allow for magnitude or complex inputs/outputs
         if magnitude_input:
-            model_input_chans = 1
+            self.model_input_chans = 1
         else:
-            model_input_chans = 2
+            self.model_input_chans = 2
         if magnitude_output:
-            model_output_chans = 1
+            self.model_output_chans = 1
         else:
-            model_output_chans = 2
+            self.model_output_chans = 2
 
         # create the layers
         layer_list = []
-        in_ch = model_input_chans
+        in_ch = self.model_input_chans
         out_ch = num_chans
 
         if num_layers > 0:
             for i in range(num_layers):
-                if i > 1:
+                if i > 0:
                     in_ch = num_chans  # first layer
                 if i == num_layers - 1:
-                    out_ch = model_output_chans  # last layer
+                    out_ch = self.model_output_chans  # last layer
 
                 layer_list.append(
                     nn.Conv2d(
@@ -53,7 +53,7 @@ class ResidDenoiseCnn(nn.Module):
                 )
                 layer_list.append(
                     # applies a covariate shift for faster training
-                    nn.BatchNorm2d(num_chans)
+                    nn.BatchNorm2d(out_ch)
                 )
                 layer_list.append(
                     nn.ReLU()  # activation function
@@ -66,3 +66,19 @@ class ResidDenoiseCnn(nn.Module):
 
     def forward(self, x):
         return x + self.conv_sequence(x)
+
+    def __repr__(self):
+        """Output for print(model) command."""
+        out = '\n' + self.__class__.__name__ + '\n'
+        out += '------------------------------------------------------------\n'
+        out += 'model_input_chans: {}\n'.format(self.model_input_chans)
+        out += 'model_output_chans: {}\n'.format(self.model_output_chans)
+        out += 'num_layers: {}\n'.format(self.num_layers)
+        out += 'num_chans: {}\n'.format(self.num_chans)
+
+        num_parameters = sum(
+            p.numel() for p in self.parameters() if p.requires_grad
+        )
+        out += 'num_parameters: {}\n'.format(num_parameters)
+
+        return out

@@ -18,7 +18,7 @@ def main(display_visuals=False):
     print('starting denoising')
 
     noise_sigma = 2e-5
-    batch_size = 8
+    batch_size = 16
     num_epochs = 20
     num_workers = 4
     device = torch.device('cuda')
@@ -123,21 +123,6 @@ def main(display_visuals=False):
                 val_losses.append(loss.item())
 
         print('validation loss: {}'.format(np.mean(val_losses)))
-
-    sample = train_dataset[15]
-
-    np_dat = np.squeeze(sample['dat'].numpy())
-    np_target = np.squeeze(sample['target'].numpy())
-
-    plt.figure(0)
-    plt.gray()
-    plt.imshow(np_dat)
-
-    plt.figure(1)
-    plt.gray()
-    plt.imshow(np_target)
-
-    plt.show()
 
 
 if __name__ == '__main__':

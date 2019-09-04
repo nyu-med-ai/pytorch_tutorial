@@ -6,7 +6,8 @@ class AddNoise(object):
 
     Args:
         dat_op (boolean, default=True): Whether to apply to 'dat' array.
-        targ_op (boolean, default=False): Whether to apply to 'target' array.
+        target_op (boolean, default=False): Whether to apply to 'target' array.
+        sigma (double, default=1): Standard deviation of the noise.
     """
 
     def __init__(self, dat_op=True, target_op=False, sigma=1):

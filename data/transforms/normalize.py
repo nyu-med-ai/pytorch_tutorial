@@ -6,7 +6,7 @@ class Normalize(object):
 
     Args:
         dat_op (boolean, default=True): Whether to apply to 'dat' array.
-        targ_op (boolean, default=False): Whether to apply to 'target' array.
+        target_op (boolean, default=False): Whether to apply to 'target' array.
         thresh_val (double, default=1e-10): Minimum division value for
             divide-by-0 protection.
     """

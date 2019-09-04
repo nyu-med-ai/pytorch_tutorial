@@ -6,24 +6,20 @@ class ToTensor(object):
     """Convert a set of complex ndarrays to a tensor.
 
     Args:
-        complex_flag (boolean, default=True): Whether 'dat' in sample is a
+        dat_complex (boolean, default=True): Whether 'dat' in sample is a
             complex image. If true, then tensor conversion puts real and
             imaginary components into separate channels.
-        float_flag (boolean, default=False): If true, casts tensors as
-            tensor.float, otherwise tensor.double.
-        pf_flag (boolean, default=False): Whether to concatenate a standard
-            partial Fourier reconstruction as an extra channel dimension.
+        target_complex (boolean, default=True): Whether 'target' in sample is a
+            complex image. If true, then tensor conversion puts real and
+            imaginary components into separate channels.
+        dtype (torch.dtype, default=torch.float): The PyTorch data type to cast
+            the tensors to.
     """
 
-    def __init__(self, dat_complex=False, target_complex=False, float_flag=True):
+    def __init__(self, dat_complex=False, target_complex=False, dtype=torch.float):
         self.dat_complex = dat_complex
         self.target_complex = target_complex
-        self.float_flag = float_flag
-
-        if float_flag == True:
-            self.dtype = torch.float
-        else:
-            self.dtype = torch.double
+        self.dtype = dtype
 
     def __call__(self, sample):
         target, dat = sample['target'], sample['dat']

@@ -6,7 +6,7 @@ class Ifft(object):
 
     Args:
         dat_op (boolean, default=True): Whether to iFFT 'dat' array.
-        targ_op (boolean, default=False): Whether to iFFT 'target' array.
+        target_op (boolean, default=False): Whether to iFFT 'target' array.
         norm (string, default=None): Normalization routine, use "ortho" for
             orthogonal FFTs.
     """

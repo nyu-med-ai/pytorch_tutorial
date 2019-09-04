@@ -11,8 +11,10 @@ from data.kneedata import KneeDataSet
 def main():
     print('starting denoising')
 
+    noise_sigma = 2e-5
+
     transform_list = [
-        transforms.AddNoise(sigma=1e-10),
+        transforms.AddNoise(sigma=noise_sigma),
         transforms.Ifft(target_op=True, norm='ortho'),
         transforms.SquareRootSumSquare(target_op=True),
         transforms.Normalize(target_op=True),

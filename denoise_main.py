@@ -30,7 +30,6 @@ def main(display_visuals=False):
         transforms.AddNoise(sigma=noise_sigma),
         transforms.Ifft(target_op=True, norm='ortho'),
         transforms.SquareRootSumSquare(target_op=True),
-        transforms.Resize(target_op=True, output_shape=(128, 64)),
         transforms.Normalize(target_op=True),
         transforms.ToTensor(dat_complex=False, target_complex=False)
     ]

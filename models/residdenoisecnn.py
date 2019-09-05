@@ -47,8 +47,8 @@ class ResidDenoiseCnn(nn.Module):
                     nn.Conv2d(
                         in_channels=in_ch,  # num input channels
                         out_channels=out_ch,  # number of filters
-                        kernel_size=3,  # size of the filter
-                        padding=1  # padding for border of image
+                        kernel_size=5,  # size of the filter
+                        padding=2  # padding for border of image
                     )
                 )
                 layer_list.append(

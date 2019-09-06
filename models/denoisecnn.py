@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 
-class ResidDenoiseCnn(nn.Module):
+class DenoiseCnn(nn.Module):
     """A residual denoising CNN model.
 
     Args:
@@ -15,7 +15,7 @@ class ResidDenoiseCnn(nn.Module):
 
     def __init__(self, num_chans, num_layers, magnitude_input=True,
                  magnitude_output=True):
-        super(ResidDenoiseCnn, self).__init__()
+        super(DenoiseCnn, self).__init__()
 
         # store the inputs as class attributes
         self.num_chans = num_chans
@@ -65,20 +65,20 @@ class ResidDenoiseCnn(nn.Module):
             print('input layers < 1!')
 
     def forward(self, x):
-        return x + self.conv_sequence(x)
+        return self.conv_sequence(x)
 
-    def __repr__(self):
-        """Output for print(model) command."""
-        out = '\n' + self.__class__.__name__ + '\n'
-        out += '------------------------------------------------------------\n'
-        out += 'model_input_chans: {}\n'.format(self.model_input_chans)
-        out += 'model_output_chans: {}\n'.format(self.model_output_chans)
-        out += 'num_layers: {}\n'.format(self.num_layers)
-        out += 'num_chans: {}\n'.format(self.num_chans)
+    # def __repr__(self):
+    #     """Output for print(model) command."""
+    #     out = '\n' + self.__class__.__name__ + '\n'
+    #     out += '------------------------------------------------------------\n'
+    #     out += 'model_input_chans: {}\n'.format(self.model_input_chans)
+    #     out += 'model_output_chans: {}\n'.format(self.model_output_chans)
+    #     out += 'num_layers: {}\n'.format(self.num_layers)
+    #     out += 'num_chans: {}\n'.format(self.num_chans)
 
-        num_parameters = sum(
-            p.numel() for p in self.parameters() if p.requires_grad
-        )
-        out += 'num_parameters: {}\n'.format(num_parameters)
+    #     num_parameters = sum(
+    #         p.numel() for p in self.parameters() if p.requires_grad
+    #     )
+    #     out += 'num_parameters: {}\n'.format(num_parameters)
 
-        return out
+    #     return out

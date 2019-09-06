@@ -6,7 +6,7 @@ import torch
 
 import data.transforms as transforms
 from data.kneedata import KneeDataSet
-from models.residdenoisecnn import ResidDenoiseCnn
+from models.denoisecnn import DenoiseCnn
 
 
 def worker_init_fn(worker_id):
@@ -17,10 +17,10 @@ def worker_init_fn(worker_id):
 def main(display_visuals=True):
     print('starting denoising')
 
-    noise_sigma = 6e-5
-    batch_size = 32
-    num_epochs = 50
-    num_workers = 12
+    noise_sigma = 4e-5
+    batch_size = 8
+    num_epochs = 200
+    num_workers = 6
     device = torch.device('cuda')
     dtype = torch.float
 
@@ -71,9 +71,9 @@ def main(display_visuals=True):
 
     # -------------------------------------------------------------------------
     # MODEL SETUP
-    model = ResidDenoiseCnn(
+    model = DenoiseCnn(
         num_chans=64,
-        num_layers=3,
+        num_layers=4,
         magnitude_input=True,
         magnitude_output=True
     )
@@ -94,6 +94,7 @@ def main(display_visuals=True):
 
         # ---------------------------------------------------------------------
         # TRAINING LOOP
+        model = model.train()
         losses = []
         for i, batch in enumerate(train_loader):
             target, dat = \
@@ -124,27 +125,29 @@ def main(display_visuals=True):
             if epoch_index == 0:
                 plt.figure(0)
                 plt.gray()
-                dat_ob = plt.imshow(np.squeeze(
-                    display_dat.cpu().numpy()), vmin=display_vmin, vmax=display_vmax)
+                plt.imshow(np.squeeze(display_dat.cpu().numpy()),
+                           vmin=display_vmin, vmax=display_vmax)
                 plt.title('CNN input')
 
                 plt.figure(1)
                 plt.gray()
-                est_ob = plt.imshow(np.squeeze(
+                plt.imshow(np.squeeze(
                     display_est.cpu().numpy()), vmin=display_vmin, vmax=display_vmax)
                 plt.title('CNN estimate')
 
                 plt.figure(2)
                 plt.gray()
-                targ_ob = plt.imshow(np.squeeze(
-                    display_target.cpu().numpy()), vmin=display_vmin, vmax=display_vmax)
+                plt.imshow(np.squeeze(display_target.cpu().numpy()),
+                           vmin=display_vmin, vmax=display_vmax)
                 plt.title('target image')
             else:
                 plt.figure(1)
-                est_ob.set_data(np.squeeze(display_est.cpu().numpy()))
+                plt.imshow(np.squeeze(
+                    display_est.cpu().numpy()), vmin=display_vmin, vmax=display_vmax)
 
             plt.draw()
             plt.pause(0.5)
+            # plt.show()
 
         # ---------------------------------------------------------------------
         # EVALUATION LOOP
@@ -160,6 +163,8 @@ def main(display_visuals=True):
                 val_losses.append(loss.item())
 
         print('validation loss: {}'.format(np.mean(val_losses)))
+
+    plt.show()
 
 
 if __name__ == '__main__':

@@ -1,28 +1,61 @@
+import datetime
 import os
 
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
+from torch.utils.tensorboard import SummaryWriter
 
 import data.transforms as transforms
 from data.kneedata import KneeDataSet
 from models.denoisecnn import DenoiseCnn
 
 
-def worker_init_fn(worker_id):
-    """Pytorch worker initialization function."""
-    np.random.seed(np.random.get_state()[1][0] + worker_id)
+def save_checkpoint(epoch, model, optimizer, val_loss, path):
+    checkpoint = {
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'min_val_loss': val_loss,
+    }
+
+    torch.save(checkpoint, path)
 
 
-def main(display_visuals=True):
+def load_checkpoint(checkpoint_file, model, optimizer):
+    if os.path.exists(checkpoint_file):
+        print('loading existing run from {}'.format(checkpoint_file))
+
+        checkpoint = torch.load(checkpoint_file)
+
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        min_val_loss = checkpoint['min_val_loss']
+        epoch = checkpoint['epoch']
+    else:
+        print('no model found in {}, running from epoch 0'.format(checkpoint_file))
+
+        epoch = 0
+        min_val_loss = np.inf
+
+    return epoch, model, optimizer, min_val_loss
+
+
+def main():
     print('starting denoising')
 
-    noise_sigma = 4e-5
-    batch_size = 8
-    num_epochs = 200
-    num_workers = 6
-    device = torch.device('cuda')
-    dtype = torch.float
+    noise_sigma = 4e-5  # sigma for the noise simulation
+    batch_size = 8  # number of images to run for each minibach
+    num_epochs = 200  # number of epochs to train
+    validation_seed = 15  # rng seed for validation loop
+    log_dir = 'logs/denoise/'  # log dir for models and tensorboard
+    device = torch.device('cpu')  # model will run on this device
+    dtype = torch.float  # dtype for data and model
+
+    # set up tensorboard
+    writer = SummaryWriter(log_dir=log_dir)
+
+    # checkpoint file name
+    checkpoint_file = os.path.join(log_dir + 'best_model.pt')
 
     # -------------------------------------------------------------------------
     # NOISE SIMULATION SETUP
@@ -54,19 +87,16 @@ def main(display_visuals=True):
         train_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=num_workers,
-        worker_init_fn=worker_init_fn
     )
     val_loader = torch.utils.data.DataLoader(
         val_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=num_workers,
-        worker_init_fn=worker_init_fn
     )
-    display_dat = val_dataset[15]['dat'].unsqueeze(0).to(device)
-    display_target = val_dataset[15]['target'].unsqueeze(0).to(device)
-    display_vmin = 0
+    display_dat = val_dataset[15]['dat'].unsqueeze(0).to(
+        device=device, dtype=dtype)
+    display_target = val_dataset[15]['target'].unsqueeze(0).to(
+        device=device, dtype=dtype)
     display_vmax = np.max(np.squeeze(display_dat.cpu().numpy()))
 
     # -------------------------------------------------------------------------
@@ -88,75 +118,59 @@ def main(display_visuals=True):
     loss_fn = torch.nn.MSELoss()
 
     # -------------------------------------------------------------------------
+    # LOAD PREVIOUS STATE
+    start_epoch, model, optimizer, min_val_loss = load_checkpoint(
+        checkpoint_file, model, optimizer)
+    current_seed = 20
+
+    # -------------------------------------------------------------------------
     # NETWORK TRAINING
-    for epoch_index in range(num_epochs):
+    for epoch_index in range(start_epoch, num_epochs):
         print('epoch {} of {}'.format(epoch_index+1, num_epochs))
 
         # ---------------------------------------------------------------------
         # TRAINING LOOP
         model = model.train()
+
+        # rng seed for noise generation
+        torch.manual_seed(current_seed)
+        np.random.seed(current_seed)
+        torch.cuda.manual_seed(current_seed)
+
+        # batch loop
         losses = []
-        for i, batch in enumerate(train_loader):
-            target, dat = \
-                batch['target'].to(device), batch['dat'].to(device)
+        for batch in train_loader:
+            target = batch['target'].to(device=device, dtype=dtype)
+            dat = batch['dat'].to(device=device, dtype=dtype)
 
-            est = model(dat)
-            loss = loss_fn(est, target)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+            est = model(dat)  # forward propagation
+            loss = loss_fn(est, target)  # calculate the loss
+            optimizer.zero_grad()  # clear out old gradients
+            loss.backward()  # back propagation
+            optimizer.step()  # update the CNN weights
 
+            # keep last 10 minibatches to compute training loss
             losses.append(loss.item())
-            losses = losses[-50:]
-
-            print('training loop progress: {:.0f}%'.format(
-                100*(i+1)/len(train_loader)))
+            losses = losses[-10:]
 
         print('trailing training loss: {}'.format(np.mean(losses)))
 
         # ---------------------------------------------------------------------
-        # VISUAL DISPLAY
-        if display_visuals:
-            torch.cuda.synchronize()
-            model = model.eval()
-
-            with torch.no_grad():
-                display_est = model(display_dat)
-
-            if epoch_index == 0:
-                plt.figure(0)
-                plt.gray()
-                plt.imshow(np.squeeze(display_dat.cpu().numpy()),
-                           vmin=display_vmin, vmax=display_vmax)
-                plt.title('CNN input')
-
-                plt.figure(1)
-                plt.gray()
-                plt.imshow(np.squeeze(
-                    display_est.cpu().numpy()), vmin=display_vmin, vmax=display_vmax)
-                plt.title('CNN estimate')
-
-                plt.figure(2)
-                plt.gray()
-                plt.imshow(np.squeeze(display_target.cpu().numpy()),
-                           vmin=display_vmin, vmax=display_vmax)
-                plt.title('target image')
-            else:
-                plt.figure(1)
-                plt.imshow(np.squeeze(
-                    display_est.cpu().numpy()), vmin=display_vmin, vmax=display_vmax)
-
-            plt.draw()
-            plt.pause(0.5)
-
-        # ---------------------------------------------------------------------
         # EVALUATION LOOP
         model = model.eval()
+
+        # rng seed for noise generation
+        current_seed = np.random.get_state()[1][0]
+        torch.manual_seed(validation_seed)
+        np.random.seed(validation_seed)
+        torch.cuda.manual_seed(validation_seed)
+
+        # batch loop
         val_losses = []
         with torch.no_grad():
             for batch in val_loader:
-                target, dat = \
-                    batch['target'].to(device), batch['dat'].to(device)
+                target = batch['target'].to(device=device, dtype=dtype)
+                dat = batch['dat'].to(device=device, dtype=dtype)
 
                 est = model(dat)
                 loss = loss_fn(est, target)
@@ -165,7 +179,43 @@ def main(display_visuals=True):
 
         print('validation loss: {}'.format(np.mean(val_losses)))
 
-    plt.show()
+        # ---------------------------------------------------------------------
+        # VISUALIZATIONS AND CHECKPOINTS
+        if np.mean(val_losses) < min_val_loss:
+            save_checkpoint(
+                epoch_index,
+                model,
+                optimizer,
+                np.mean(val_losses),
+                checkpoint_file
+            )
+
+        # write the losses
+        writer.add_scalar('loss/train', np.mean(losses), epoch_index)
+        writer.add_scalar('loss/validation', np.mean(val_losses), epoch_index)
+
+        # show an example image from the validation data
+        model = model.eval()
+        with torch.no_grad():
+            display_est = model(display_dat)
+
+        writer.add_image(
+            'validation/dat',
+            display_dat[0]/display_vmax,
+            global_step=epoch_index
+        )
+        writer.add_image(
+            'validation/cnn',
+            display_est[0]/display_vmax,
+            global_step=epoch_index
+        )
+        writer.add_image(
+            'validation/target',
+            display_target[0]/display_vmax,
+            global_step=epoch_index
+        )
+
+    writer.close()
 
 
 if __name__ == '__main__':

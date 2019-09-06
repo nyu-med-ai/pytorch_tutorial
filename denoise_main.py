@@ -1,4 +1,3 @@
-import datetime
 import os
 
 import numpy as np
@@ -191,8 +190,9 @@ def main():
             )
 
         # write the losses
-        writer.add_scalar('loss/train', np.mean(losses), epoch_index)
-        writer.add_scalar('loss/validation', np.mean(val_losses), epoch_index)
+        writer.add_scalar('loss/train', np.mean(losses), epoch_index+1)
+        writer.add_scalar('loss/validation',
+                          np.mean(val_losses), epoch_index+1)
 
         # show an example image from the validation data
         model = model.eval()
@@ -202,17 +202,17 @@ def main():
         writer.add_image(
             'validation/dat',
             display_dat[0]/display_vmax,
-            global_step=epoch_index
+            global_step=epoch_index+1
         )
         writer.add_image(
             'validation/cnn',
             display_est[0]/display_vmax,
-            global_step=epoch_index
+            global_step=epoch_index+1
         )
         writer.add_image(
             'validation/target',
             display_target[0]/display_vmax,
-            global_step=epoch_index
+            global_step=epoch_index+1
         )
 
     writer.close()

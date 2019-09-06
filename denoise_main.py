@@ -114,11 +114,12 @@ def main(display_visuals=True):
 
         print('trailing training loss: {}'.format(np.mean(losses)))
 
-        model = model.eval()
-
         # ---------------------------------------------------------------------
         # VISUAL DISPLAY
         if display_visuals:
+            torch.cuda.synchronize()
+            model = model.eval()
+
             with torch.no_grad():
                 display_est = model(display_dat)
 
@@ -147,10 +148,10 @@ def main(display_visuals=True):
 
             plt.draw()
             plt.pause(0.5)
-            # plt.show()
 
         # ---------------------------------------------------------------------
         # EVALUATION LOOP
+        model = model.eval()
         val_losses = []
         with torch.no_grad():
             for batch in val_loader:

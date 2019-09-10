@@ -3,6 +3,13 @@
 
 A repository with an example for training a basic denoising CNN in PyTorch.
 
+Parts of this tutorial are based on the 60-Minute PyTorch Blitz by Soumith
+Chintala, available at
+
+```url
+https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html
+```
+
 ## Goals
 
 1) Introduce attendees to PyTorch.

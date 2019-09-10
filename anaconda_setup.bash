@@ -1,0 +1,1 @@
+conda install -c conda-forge -c anaconda -c pytorch python future tensorboard jupyterlab pytorch torchvision cpuonly pillow h5py

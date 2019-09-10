@@ -20,8 +20,8 @@ Anaconda is available for Windows, Mac, and Linux.
 Then, you'll need to create a new environment, activate it and install the
 packages:
 
-~~~~sh
+```sh
 conda create --name pytorch_tutorial
 conda activate pytorch_tutorial
 bash anaconda_setup.bash
-~~~~sh
+```

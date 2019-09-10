@@ -3,7 +3,7 @@
 
 A repository with an example for training a basic denoising CNN in PyTorch.
 
-## Milestones / Goals
+## Goals
 
 1) Introduce attendees to PyTorch.
 2) Provide code for interacting with Matlab data.

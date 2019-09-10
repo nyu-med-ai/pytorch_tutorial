@@ -13,12 +13,14 @@ A repository with an example for training a basic denoising CNN in PyTorch.
 
 First, you'll need to install Anaconda from here:
 
-https://github.com/nyu-med-ai/pytorch_tutorial
+https://www.anaconda.com/distribution/
 
 Anaconda is available for Windows, Mac, and Linux.
 
-Then, you'll need to create a new environment, activate it and install the
-packages:
+Then, you'll need to download this repository. After you download this
+repository, open the Anaconda prompt (on Linux or MacOS, this should just be
+a terminal. On Windows it's a program called "Anaconda Prompt") and navigate
+to the directory where you downloaded the repository. Then, type the following:
 
 ```sh
 conda create --name pytorch_tutorial

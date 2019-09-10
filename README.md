@@ -1,7 +1,7 @@
 
 # 90-Minute PyTorch Blitz
 
-A repository for running a basic denoising CNN in PyTorch with examples.
+A repository with an example for training a basic denoising CNN in PyTorch.
 
 ## Milestones / Goals
 

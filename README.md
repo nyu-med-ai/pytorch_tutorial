@@ -26,8 +26,17 @@ conda activate pytorch_tutorial
 bash anaconda_setup.bash
 ```
 
-You should get a bunch of installation messages. After this you should be able
-to run the code.
+You should get a bunch of installation messages. After this is complete,
+verify your installation by typing `python`. Once the Python interpreter is
+running, type
+
+```python
+import torch
+print(torch.__version__)
+```
+
+If you see 1.2.0 or greater for the version, you should be able to run all
+examples in this repository.
 
 ## Basic Example
 

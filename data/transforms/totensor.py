@@ -16,7 +16,7 @@ class ToTensor(object):
             the tensors to.
     """
 
-    def __init__(self, dat_complex=True, target_complex=True, dtype=torch.float):
+    def __init__(self, dat_complex=False, target_complex=False, dtype=torch.float):
         self.dat_complex = dat_complex
         self.target_complex = target_complex
         self.dtype = dtype

@@ -11,7 +11,7 @@ class Normalize(object):
             divide-by-0 protection.
     """
 
-    def __init__(self, dat_op=True, target_op=False, thresh_val=1e-10):
+    def __init__(self, dat_op=True, target_op=True, thresh_val=1e-10):
         self.dat_op = dat_op
         self.target_op = target_op
         self.thresh_val = thresh_val

@@ -9,7 +9,7 @@ class SquareRootSumSquare(object):
         target_op (boolean, default=False): Whether to apply to 'target' array.
     """
 
-    def __init__(self, dat_op=True, target_op=False):
+    def __init__(self, dat_op=True, target_op=True):
         self.dat_op = dat_op
         self.target_op = target_op
 

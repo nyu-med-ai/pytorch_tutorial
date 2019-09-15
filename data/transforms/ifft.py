@@ -11,7 +11,7 @@ class Ifft(object):
             orthogonal FFTs.
     """
 
-    def __init__(self, dat_op=True, target_op=False, norm=None):
+    def __init__(self, dat_op=True, target_op=True, norm=None):
         self.dat_op = dat_op
         self.target_op = target_op
         self.norm = norm

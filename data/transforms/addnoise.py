@@ -10,7 +10,7 @@ class AddNoise(object):
         sigma (double, default=1): Standard deviation of the noise.
     """
 
-    def __init__(self, dat_op=True, target_op=False, sigma=1):
+    def __init__(self, dat_op=True, target_op=True, sigma=1):
         self.dat_op = dat_op
         self.target_op = target_op
         self.sigma = sigma

@@ -59,10 +59,10 @@ def main():
     # -------------------------------------------------------------------------
     # NOISE SIMULATION SETUP
     transform_list = [
-        transforms.AddNoise(sigma=noise_sigma),
-        transforms.Ifft(target_op=True, norm='ortho'),
-        transforms.SquareRootSumSquare(target_op=True),
-        transforms.Normalize(target_op=True),
+        transforms.AddNoise(target_op=False, sigma=noise_sigma),
+        transforms.Ifft(norm='ortho'),
+        transforms.SquareRootSumSquare(),
+        transforms.Normalize(),
         transforms.ToTensor(dat_complex=False, target_complex=False)
     ]
 

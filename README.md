@@ -20,7 +20,9 @@ https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html
 
 First, you'll need to install Anaconda from here:
 
+```url
 https://www.anaconda.com/distribution/
+```
 
 Anaconda is available for Windows, Mac, and Linux.
 
@@ -63,6 +65,11 @@ as contiguous, multicoil complex Matlab arrays. Behavior can be inferred by
 inspecting ```data/kneedata.py``` and the corresponding transform modules.
 
 ### Running the example
+
+Jupyter notebooks can be found in ```tensors_and_autograd_tutorial.ipynb``` and
+```neural_networks_tutorial.ipynb``` in the base directory. These examples are
+primarily meant to be didactic - to fully explore the code, we recommend
+running the main function.
 
 To run the main example, after installing Anaconda with the required packages
 you should just have to run

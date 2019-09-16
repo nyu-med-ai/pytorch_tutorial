@@ -2,3 +2,5 @@
 *__pycache__*
 pytorch_tutorial_data
 logs
+.ipynb_checkpoints
+ipynb_old

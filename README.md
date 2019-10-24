@@ -37,9 +37,10 @@ conda activate pytorch_tutorial
 bash anaconda_setup.bash
 ```
 
-You should get a bunch of installation messages. After this is complete, you
-should verify your installation. To do this, first type `python`. Then, once
-the Python interpreter is running, type
+If you are on Windows you can copy-paste the contentds of anaconda_setup.bash
+into your Anaconda prompt. You should get a bunch of installation messages.
+After this is complete, you should verify your installation. To do this, first
+type `python`. Then, once the Python interpreter is running, type
 
 ```python
 import torch
